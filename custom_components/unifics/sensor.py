@@ -156,7 +156,8 @@ class UnifiSensor(Entity):
                 self.ap_list[ap['mac']]['num_sta'] = ap['num_sta']
                 total += int(ap['num_sta'])
                 self.ap_list[ap['mac']]['essidlist'] = []
-                for i in ap['vap_table']:
+                if 'vap_table' in ap.keys():
+                  for i in ap['vap_table']:
                     self.ap_list[ap['mac']]['essidlist'].append( { 'essid': i['essid'], 
                                                                'channel': i['channel'], 
                                                                'num_sta': i['num_sta'] })

@@ -6,5 +6,5 @@
   "requirements": ["unificontrol@git+https://github.com/nickovs/unificontrol.git@udm-support#egg=unificontrol"],
   "dependencies": [],
   "codeowners": ["@clyra"],
-  "version": "0.1"
+  "version": "0.1.1"
 }
