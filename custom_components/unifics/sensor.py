@@ -67,7 +67,7 @@ async def async_setup_entry(
                         udm=config.get(CONF_UDM)
                        )
     if api['error'] == 'ok':
-        control = api['cient']
+        control = api['client']
         async def async_update_data():
             """ fetch data from the unifi wrapper"""
             async with async_timeout.timeout(10):
@@ -109,7 +109,7 @@ async def async_setup_platform(
                         udm=config.get(CONF_UDM)
                        )
     if api['error'] == 'ok':
-        control = api['cient']
+        control = api['client']
         async def async_update_data():
             """ fetch data from the unifi wrapper"""
             async with async_timeout.timeout(10):
