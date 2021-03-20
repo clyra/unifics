@@ -67,32 +67,32 @@ async def async_setup_entry(
                         udm=config.get(CONF_UDM)
                        )
     if api['error'] == 'ok':
-    	control = api['cient']
-    	async def async_update_data():
-        	""" fetch data from the unifi wrapper"""
-        	async with async_timeout.timeout(10):
-            	data = await hass.async_add_executor_job(control.list_devices)
-            	return data
+        control = api['cient']
+        async def async_update_data():
+            """ fetch data from the unifi wrapper"""
+            async with async_timeout.timeout(10):
+                data = await hass.async_add_executor_job(control.list_devices)
+                return data
 
-    	coordinator = DataUpdateCoordinator(
-        	hass,
-        	_LOGGER,
-        	name="sensor",
-        	update_method=async_update_data,
-        	# Polling interval. Will only be polled if there are subscribers.
-        	update_interval=timedelta(seconds=30),
-    	   )
+        coordinator = DataUpdateCoordinator(
+            hass,
+            _LOGGER,
+            name="sensor",
+            update_method=async_update_data,
+            # Polling interval. Will only be polled if there are subscribers.
+            update_interval=timedelta(seconds=30),
+           )
 
    
-    	# Fetch initial data so we have data when entities subscribe
-    	await coordinator.async_refresh()
+        # Fetch initial data so we have data when entities subscribe
+        await coordinator.async_refresh()
 
-    	entities = []
-    	entities.append(UnifiSensor(coordinator, config.get(CONF_NAME)))
+        entities = []
+        entities.append(UnifiSensor(coordinator, config.get(CONF_NAME)))
 
-    	async_add_entities(entities)
+        async_add_entities(entities)
     else:
-    	_LOGGER.error('Error while setting the sensor: {}'.format(api['error']))
+        _LOGGER.error('Error while setting the sensor: {}'.format(api['error']))
 
 async def async_setup_platform(
         hass: HomeAssistantType,
@@ -110,32 +110,32 @@ async def async_setup_platform(
                         udm=config.get(CONF_UDM)
                        )
     if api['error'] == 'ok':
-    	control = api['cient']
-    	async def async_update_data():
-        	""" fetch data from the unifi wrapper"""
-        	async with async_timeout.timeout(10):
-            	data = await hass.async_add_executor_job(control.list_devices)
-            	return data
+        control = api['cient']
+        async def async_update_data():
+            """ fetch data from the unifi wrapper"""
+            async with async_timeout.timeout(10):
+                data = await hass.async_add_executor_job(control.list_devices)
+                return data
 
-    	coordinator = DataUpdateCoordinator(
-        	hass,
-        	_LOGGER,
-        	name="sensor",
-        	update_method=async_update_data,
-        	# Polling interval. Will only be polled if there are subscribers.
-        	update_interval=timedelta(seconds=30),
-    	   )
+        coordinator = DataUpdateCoordinator(
+            hass,
+            _LOGGER,
+            name="sensor",
+            update_method=async_update_data,
+            # Polling interval. Will only be polled if there are subscribers.
+            update_interval=timedelta(seconds=30),
+           )
 
    
-    	# Fetch initial data so we have data when entities subscribe
-    	await coordinator.async_refresh()
+        # Fetch initial data so we have data when entities subscribe
+        await coordinator.async_refresh()
 
-    	entities = []
-    	entities.append(UnifiSensor(coordinator, config.get(CONF_NAME)))
+        entities = []
+        entities.append(UnifiSensor(coordinator, config.get(CONF_NAME)))
 
-    	async_add_entities(entities)
+        async_add_entities(entities)
     else:
-    	_LOGGER.error('Error while setting the sensor: {}'.format(api['error']))
+        _LOGGER.error('Error while setting the sensor: {}'.format(api['error']))
 
 class UnifiSensor(Entity):
     """Representation of a Unifi Sensor."""

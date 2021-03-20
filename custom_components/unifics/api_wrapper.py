@@ -10,7 +10,6 @@ _LOGGER = logging.getLogger(__name__)
 def create_client( host, port, username, password, site, cert, udm):
     '''create a unificlient and return a error code if any'''
 
-    _LOGGER.error("1")
     verifyssl = "FETCH_CERT"
     if cert == True:
        verifyssl = None
@@ -21,7 +20,7 @@ def create_client( host, port, username, password, site, cert, udm):
       server_type = UnifiServerType.CLASSIC
 
     try:
-        _LOGGER.info('host={}, port={}, username={}, pw={}, site={}, cert={}'.format(host, port, username, password, site, verifyssl))
+        _LOGGER.debug('host={}, port={}, username={}, site={}, cert={}, udm={}'.format(host, port, username, site, verifyssl, udm))
         client = UnifiClient( host = host,
                               port = port,
                               username = username,
@@ -38,6 +37,7 @@ def create_client( host, port, username, password, site, cert, udm):
         return { 'client': None, 'error': 'auth' }
             
     except UnifiTransportError as e:
+      _LOGGER.error("unificontrol error: %s", e)
         return { 'client': None, 'error': 'ssl' }
 
     except Exception as e:
@@ -50,5 +50,5 @@ def create_client( host, port, username, password, site, cert, udm):
             return { 'client': None, 'error': 'unknow'}
             _LOGGER.error("unificontrol error: %s", e)
 
-    _LOGGER.info("unificontrol: OK") 
+    _LOGGER.debug("unificontrol: OK") 
     return { 'client': client, 'error': 'ok'}
