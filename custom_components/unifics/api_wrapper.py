@@ -37,7 +37,7 @@ def create_client( host, port, username, password, site, cert, udm):
         return { 'client': None, 'error': 'auth' }
             
     except UnifiTransportError as e:
-      _LOGGER.error("unificontrol error: %s", e)
+        _LOGGER.error("unificontrol error: %s", e)
         return { 'client': None, 'error': 'ssl' }
 
     except Exception as e:
