@@ -83,7 +83,6 @@ async def async_setup_entry(
             update_interval=timedelta(seconds=30),
            )
 
-   
         # Fetch initial data so we have data when entities subscribe
         await coordinator.async_refresh()
 
@@ -126,7 +125,6 @@ async def async_setup_platform(
             update_interval=timedelta(seconds=30),
            )
 
-   
         # Fetch initial data so we have data when entities subscribe
         await coordinator.async_refresh()
 
