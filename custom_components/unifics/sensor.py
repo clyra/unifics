@@ -57,15 +57,17 @@ async def async_setup_entry(
   
     config = hass.data[DOMAIN][config_entry.entry_id]
    
-   
-    api = create_client(host=config.get(CONF_HOST), 
-                        port=config.get(CONF_PORT), 
-                        username=config.get(CONF_USERNAME),
-                        password=config.get(CONF_PASSWORD), 
-                        site=config.get(CONF_SITE),
-                        cert=config.get(CONF_VERIFY_SSL),
-                        udm=config.get(CONF_UDM)
-                       )
+    def sync_create_client():
+        return create_client(host=config.get(CONF_HOST), 
+                             port=config.get(CONF_PORT), 
+                             username=config.get(CONF_USERNAME),
+                             password=config.get(CONF_PASSWORD), 
+                             site=config.get(CONF_SITE),
+                             cert=config.get(CONF_VERIFY_SSL),
+                             udm=config.get(CONF_UDM)
+                            )
+    api = await hass.async_add_executor_job(sync_create_client)
+
     if api['error'] == 'ok':
         control = api['client']
         async def async_update_data():
@@ -100,14 +102,17 @@ async def async_setup_platform(
         discovery_info: Optional[DiscoveryInfoType] = None):
     """Setup the unifi counter sensor."""
 
-    api = create_client(host=config.get(CONF_HOST), 
-                        port=config.get(CONF_PORT), 
-                        username=config.get(CONF_USERNAME),
-                        password=config.get(CONF_PASSWORD), 
-                        site=config.get(CONF_SITE),
-                        cert=config.get(CONF_VERIFY_SSL),
-                        udm=config.get(CONF_UDM)
-                       )
+    def sync_create_client():
+        return create_client(host=config.get(CONF_HOST), 
+                             port=config.get(CONF_PORT), 
+                             username=config.get(CONF_USERNAME),
+                             password=config.get(CONF_PASSWORD), 
+                             site=config.get(CONF_SITE),
+                             cert=config.get(CONF_VERIFY_SSL),
+                             udm=config.get(CONF_UDM)
+                            )
+    api = await hass.async_add_executor_job(sync_create_client)
+    
     if api['error'] == 'ok':
         control = api['client']
         async def async_update_data():
