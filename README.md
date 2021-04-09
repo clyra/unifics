@@ -25,6 +25,6 @@ sensor:
      password: <unifi_controller_password>
      site: <your "site" on controller> (optional, default: 'default')
      verify_ssl: <True/False> (optional, default: 'False')
-     udm: <True/False> (optional, if you have a Unifi Dream Machine use True as the API is different)
+     udm: <True/False> (optional, default: 'False'. If you have a device running UniFiOS such as a Unifi Dream Machine then use 'True' as the API is different.)
 ```
 
