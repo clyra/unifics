@@ -3,9 +3,9 @@
   "name": "Unifi Counter Sensor",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/unifics",
-  "requirements": ["unificontrol@git+https://github.com/nickovs/unificontrol.git@udm-support#egg=unificontrol"],
+  "requirements": ["unificontrol>=0.2.8"],
   "dependencies": [],
   "codeowners": ["@clyra"],
-  "version": "0.1.3"
+  "version": "0.1.3",
   "iot_class": "local_polling"
 }
