@@ -46,18 +46,13 @@ class UnificsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         errors = {}
 
-        #valid = await async_add_executor_job(
-        #                    create_client,
-        #                    user_input[CONF_HOST], user_input[CONF_PORT],
-        #                    user_input[CONF_USERNAME], user_input[CONF_PASSWORD],
-        #                    user_input[CONF_SITE], user_input[CONF_VERIFY_SSL],
-        #                    user_input[CONF_UDM]
-        #                )
-
-        valid = create_client(user_input[CONF_HOST], user_input[CONF_PORT],
+        valid = await self.hass.async_add_executor_job(
+                            create_client,
+                            user_input[CONF_HOST], user_input[CONF_PORT],
                             user_input[CONF_USERNAME], user_input[CONF_PASSWORD],
                             user_input[CONF_SITE], user_input[CONF_VERIFY_SSL],
-                            user_input[CONF_UDM])
+                            user_input[CONF_UDM]
+                        )
 
         if valid['error'] == 'ok':
             return self.async_create_entry(
