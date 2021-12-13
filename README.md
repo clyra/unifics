@@ -7,9 +7,18 @@ shows the devices per AP and per ESSID as attributes of the sensor.
 
 ## Install
 
-Copy unifics folder to your home-assistant custom_components folder.
+To install via the HACS UI on Home Assistant:
+1. Visit the HACS Integrations pane
+2. Select the three dots in the top right hand corner & select 'Custom repositories'
+3. Add https://github.com/clyra/unifics as the Repository and select Integration as the category.
+4. 'Unifi Counter Sensor' should now show up as a new integration, click Download.
+5. Restart Home Assistant.
+6. Configure the integration (as per the next section)
 
-TODO: hacs install
+To manually install the integration:
+1. Copy the `custom_components/unifics` folder and all of its files to your `config/custom_components` directory in Home Assistant.
+2. Restart Home Assistant
+3. Configure the integration (as per the next section)
 
 ## Configure
 
