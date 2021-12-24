@@ -1,4 +1,5 @@
 import logging
+import ssl
 from enum import Enum
 
 from unificontrol import UnifiClient
@@ -10,9 +11,14 @@ _LOGGER = logging.getLogger(__name__)
 def create_client( host, port, username, password, site, cert, udm):
     '''create a unificlient and return a error code if any'''
 
-    verifyssl = "FETCH_CERT"
     if cert == True:
        verifyssl = None
+    else:
+        try:
+            verifyssl = ssl.get_server_certificate((host, port))
+        except Exception as e:
+            _LOGGER.error("unificontrol error: %s", e)
+            verifyssl = 'FETCH_CERT'           
     
     if udm == True:
         server_type = UnifiServerType.UDM
