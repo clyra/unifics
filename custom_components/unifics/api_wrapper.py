@@ -1,4 +1,7 @@
 import logging
+import requests
+from urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 import ssl
 from enum import Enum
 
@@ -14,11 +17,7 @@ def create_client( host, port, username, password, site, cert, udm):
     if cert == True:
        verifyssl = None
     else:
-        try:
-            verifyssl = ssl.get_server_certificate((host, port))
-        except Exception as e:
-            _LOGGER.error("unificontrol error: %s", e)
-            verifyssl = 'FETCH_CERT'           
+       verifyssl = 'FETCH_CERT'           
     
     if udm == True:
         server_type = UnifiServerType.UDM
