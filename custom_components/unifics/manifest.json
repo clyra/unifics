@@ -3,7 +3,7 @@
   "name": "Unifi Counter Sensor",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/unifics",
-  "requirements": ["unificontrol@git+https://github.com/nickovs/unificontrol.git@udm-support#egg=unificontrol"],
+  "requirements": ["unificontrol@git+https://github.com/clyra/unificontrol.git@udm-support#egg=unificontrol"],
   "dependencies": [],
   "codeowners": ["@clyra"],
   "version": "0.1.4",
