@@ -27,7 +27,7 @@ The sensor can be configured in the UI or using a yaml file:
 ```yaml
 sensor:
    - platform: unifics
-     name: <whatever you want> (optional, default: "Unifi Couter Sensor")
+     name: <whatever you want> (optional, default: "Unifi Counter Sensor")
      host: <your unifi controller ip or dns name>
      port: <controller port> (optional, default: 8443)
      username: <unifi_controller_username>
