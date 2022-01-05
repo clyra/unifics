@@ -4,7 +4,7 @@
 NAME = "Unifi Counter Sensor"
 DOMAIN = "unifics"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 
 ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
 ISSUE_URL = "https://github.com/clyra/unifi-counter-sensor/issues"

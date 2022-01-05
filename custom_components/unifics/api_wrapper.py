@@ -5,55 +5,39 @@ requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 import ssl
 from enum import Enum
 
-from unificontrol import UnifiClient
-from unificontrol.exceptions import UnifiLoginError, UnifiTransportError
-from unificontrol import UnifiServerType
+from pyunifi import Controller
+
 
 _LOGGER = logging.getLogger(__name__)
 
 def create_client( host, port, username, password, site, cert, udm):
-    '''create a unificlient and return a error code if any'''
+    '''create a controller and return a error code if any'''
 
     if cert == True:
-       verifyssl = None
+       ssl_verify = True
     else:
-       verifyssl = 'FETCH_CERT'           
+       ssl_verify = False           
     
     if udm == True:
-        server_type = UnifiServerType.UDM
+        server_type = "UDMP-unifiOS"
     else:
-      server_type = UnifiServerType.CLASSIC
+      server_type = "v5"
 
     try:
         _LOGGER.debug('host={}, port={}, username={}, site={}, cert={}, udm={}'.format(host, port, username, site, verifyssl, udm))
-        client = UnifiClient( host = host,
+        client = Controller ( host,
+                              username,
+                              password, 
                               port = port,
-                              username = username,
-                              password = password,
-                              site = site,
-                              cert = verifyssl,
-                              server_type = server_type 
+                              site_id = site,
+                              ssl_verify = ssl_verify,
+                              version = server_type 
                              )
         #try to fetch something
-        client.list_devices()
-
-    except UnifiLoginError as e:
-        _LOGGER.error("unificontrol error: %s", e)
-        return { 'client': None, 'error': 'auth' }
-            
-    except UnifiTransportError as e:
-        _LOGGER.error("unificontrol error: %s", e)
-        return { 'client': None, 'error': 'ssl' }
+        client.lget_aps()
 
     except Exception as e:
-        _LOGGER.error("unificontrol error: %s", e)
-        if e.args[0] == 113:
-            return { 'client': None, 'error': 'unreachable'}
-        elif e.args[0] == 111:
-            return { 'client': None, 'error': 'connection'}
-        else:
-            return { 'client': None, 'error': 'unknow'}
-            _LOGGER.error("unificontrol error: %s", e)
+        _LOGGER.error("pyunify error: %s", e)
 
     _LOGGER.debug("unificontrol: OK") 
     return { 'client': client, 'error': 'ok'}
