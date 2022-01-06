@@ -74,7 +74,7 @@ async def async_setup_entry(
             async with async_timeout.timeout(10):
                 data = {}
                 data["aps"] = await hass.async_add_executor_job(control.get_aps)
-                data["clients"] = await hass.async_add_executor_job(control.list_devices)
+                data["clients"] = await hass.async_add_executor_job(control.get_clients)
                 return data
 
         coordinator = DataUpdateCoordinator(
@@ -121,7 +121,7 @@ async def async_setup_platform(
             async with async_timeout.timeout(10):
                 data = {}
                 data["aps"] = await hass.async_add_executor_job(control.get_aps)
-                data["clients"] = await hass.async_add_executor_job(control.list_devices)
+                data["clients"] = await hass.async_add_executor_job(control.get_clients)
                 return data
 
         coordinator = DataUpdateCoordinator(
@@ -163,7 +163,7 @@ class UnifiSensor(Entity):
             clients = self.coordinator.data['clients']
 
             total = 0
-            attr = {}
+            self._attr = {}
 
             self.ap_list = {}
             essid_sum = {}
@@ -185,6 +185,7 @@ class UnifiSensor(Entity):
 
         except Exception as e:
             _LOGGER.error("Error while trying to update sensor: %s", e)
+            _LOGGER.error("ap_name: %s,  client_essid: %s", ap_name, client_essid)
             self._total = 0
 
     def unifi_status(self, state):
