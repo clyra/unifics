@@ -9,7 +9,6 @@ import logging
 from homeassistant import config_entries, core
 from homeassistant.core import callback
 from typing import Any, Callable, Dict, Optional
-from unificontrol import UnifiClient
 from .api_wrapper import create_client
 
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -73,7 +72,9 @@ async def async_setup_entry(
         async def async_update_data():
             """ fetch data from the unifi wrapper"""
             async with async_timeout.timeout(10):
-                data = await hass.async_add_executor_job(control.list_devices)
+                data = {}
+                data["aps"] = await hass.async_add_executor_job(control.get_aps)
+                data["clients"] = await hass.async_add_executor_job(control.get_clients)
                 return data
 
         coordinator = DataUpdateCoordinator(
@@ -118,7 +119,9 @@ async def async_setup_platform(
         async def async_update_data():
             """ fetch data from the unifi wrapper"""
             async with async_timeout.timeout(10):
-                data = await hass.async_add_executor_job(control.list_devices)
+                data = {}
+                data["aps"] = await hass.async_add_executor_job(control.get_aps)
+                data["clients"] = await hass.async_add_executor_job(control.get_clients)
                 return data
 
         coordinator = DataUpdateCoordinator(
@@ -156,42 +159,33 @@ class UnifiSensor(Entity):
 
     def update_all(self):
         try:
-            tmplist = self.coordinator.data
+            aps = self.coordinator.data['aps']
+            clients = self.coordinator.data['clients']
 
             total = 0
+            self._attr = {}
+
             self.ap_list = {}
             essid_sum = {}
+            
+            ap_names = dict([(ap['mac'], ap.get('name', 'unknow')) for ap in aps])
 
-            for ap in tmplist:
-                if 'name' in ap.keys():
-                    self.ap_list[ap['mac']] = { 'name': "AP " + ap['name'] }
-                else:
-                    self.ap_list[ap['mac']] = { 'name': "AP " + ap['mac'] }
-                self.ap_list[ap['mac']]['num_sta'] = ap['num_sta']
-                total += int(ap['num_sta'])
-                self.ap_list[ap['mac']]['essidlist'] = []
-                if 'vap_table' in ap.keys():
-                  for i in ap['vap_table']:
-                    self.ap_list[ap['mac']]['essidlist'].append( { 'essid': i['essid'], 
-                                                               'channel': i['channel'], 
-                                                               'num_sta': i['num_sta'] })
-                    if i['essid'] in essid_sum.keys():
-                        essid_sum[i['essid']] += int(i['num_sta'])
-                    else:
-                        essid_sum[i['essid']] = int(i['num_sta'])
-
-            # add devieces per ap to the attr list
-            for ap in self.ap_list.keys():
-                self._attr[self.ap_list[ap]['name']] = self.ap_list[ap]['num_sta']
-
-            # add devices per essid to attr list
-            for k in essid_sum.keys():
-                self._attr[k] = essid_sum[k]
+            for client in clients:
+                total += 1
+                if client.get('is_wired') == True:
+                    self._attr['wired'] = self._attr.get('wired', 0) + 1
+                    continue
+                ap_name = ap_names.get(client.get('ap_mac'))
+                ap_name = "AP " + ap_name
+                client_essid = client.get('essid', 'unknow')
+                self._attr[ap_name] = self._attr.get(ap_name, 0) + 1
+                self._attr[client_essid] = self._attr.get(client_essid, 0) + 1
 
             self._total = total
 
         except Exception as e:
             _LOGGER.error("Error while trying to update sensor: %s", e)
+            _LOGGER.error("ap_name: %s,  client_essid: %s", ap_name, client_essid)
             self._total = 0
 
     def unifi_status(self, state):
