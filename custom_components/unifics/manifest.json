@@ -6,6 +6,6 @@
   "requirements": ["pyunifi@git+https://github.com/finish06/pyunifi.git#egg=pyunifi"],
   "dependencies": [],
   "codeowners": ["@clyra"],
-  "version": "0.1.4",
+  "version": "0.2.1",
   "iot_class": "local_polling"
 }

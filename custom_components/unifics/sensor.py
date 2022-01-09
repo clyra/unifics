@@ -19,7 +19,7 @@ from homeassistant.const import (
     STATE_UNKNOWN, PRECISION_WHOLE
 )
 from .const import (
-    CONF_NAME, CONF_USERNAME, CONF_PASSWORD, 
+    CONF_NAME, CONF_USERNAME, CONF_PASSWORD,
     CONF_HOST, CONF_PORT, CONF_SITE, CONF_VERIFY_SSL,
     CONF_UDM, DOMAIN
 )
@@ -41,7 +41,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Required(CONF_PASSWORD): config_validation.string,
         vol.Required(CONF_HOST): config_validation.string,
         vol.Optional(CONF_PORT, default=8443): config_validation.positive_int,
-        vol.Optional(CONF_SITE, default='default'): config_validation.string,   
+        vol.Optional(CONF_SITE, default='default'): config_validation.string,
         vol.Optional(CONF_VERIFY_SSL, default=False): config_validation.boolean,
         vol.Optional(CONF_UDM, default=False): config_validation.boolean
     }
@@ -53,14 +53,14 @@ async def async_setup_entry(
     async_add_entities,
 ):
     """Setup sensors from a config entry created in the integrations UI."""
-  
+
     config = hass.data[DOMAIN][config_entry.entry_id]
-   
+
     def sync_create_client():
-        return create_client(host=config.get(CONF_HOST), 
-                             port=config.get(CONF_PORT), 
+        return create_client(host=config.get(CONF_HOST),
+                             port=config.get(CONF_PORT),
                              username=config.get(CONF_USERNAME),
-                             password=config.get(CONF_PASSWORD), 
+                             password=config.get(CONF_PASSWORD),
                              site=config.get(CONF_SITE),
                              cert=config.get(CONF_VERIFY_SSL),
                              udm=config.get(CONF_UDM)
@@ -74,6 +74,7 @@ async def async_setup_entry(
             async with async_timeout.timeout(10):
                 data = {}
                 data["aps"] = await hass.async_add_executor_job(control.get_aps)
+                data["wlans"] = await hass.async_add_executor_job(control.get_wlan_conf)
                 data["clients"] = await hass.async_add_executor_job(control.get_clients)
                 return data
 
@@ -98,22 +99,22 @@ async def async_setup_entry(
 
 async def async_setup_platform(
         hass: HomeAssistantType,
-        config: ConfigType, 
-        async_add_entities: Callable, 
+        config: ConfigType,
+        async_add_entities: Callable,
         discovery_info: Optional[DiscoveryInfoType] = None):
     """Setup the unifi counter sensor."""
 
     def sync_create_client():
-        return create_client(host=config.get(CONF_HOST), 
-                             port=config.get(CONF_PORT), 
+        return create_client(host=config.get(CONF_HOST),
+                             port=config.get(CONF_PORT),
                              username=config.get(CONF_USERNAME),
-                             password=config.get(CONF_PASSWORD), 
+                             password=config.get(CONF_PASSWORD),
                              site=config.get(CONF_SITE),
                              cert=config.get(CONF_VERIFY_SSL),
                              udm=config.get(CONF_UDM)
                             )
     api = await hass.async_add_executor_job(sync_create_client)
-    
+
     if api['error'] == 'ok':
         control = api['client']
         async def async_update_data():
@@ -121,6 +122,7 @@ async def async_setup_platform(
             async with async_timeout.timeout(10):
                 data = {}
                 data["aps"] = await hass.async_add_executor_job(control.get_aps)
+                data["wlans"] = await hass.async_add_executor_job(control.get_wlan_conf)
                 data["clients"] = await hass.async_add_executor_job(control.get_clients)
                 return data
 
@@ -160,23 +162,29 @@ class UnifiSensor(Entity):
     def update_all(self):
         try:
             aps = self.coordinator.data['aps']
+            wlans = self.coordinator.data['wlans']
             clients = self.coordinator.data['clients']
 
             total = 0
             self._attr = {}
-
             self.ap_list = {}
-            essid_sum = {}
-            
+
             ap_names = dict([(ap['mac'], ap.get('name', 'unknow')) for ap in aps])
+
+            for ap in sorted(aps, key=lambda x: x.get('name', 'unknow').lower()):
+                if ap.get('type') in [ 'udm', 'uap']:
+                    name = "AP " + ap.get('name', 'unknow')
+                    self._attr[name] = 0
+
+            for wlan in sorted(wlans, key=lambda x: x.get('name', 'unknow').lower()):
+                self._attr[wlan.get('name')] = 0
 
             for client in clients:
                 total += 1
                 if client.get('is_wired') == True:
                     self._attr['wired'] = self._attr.get('wired', 0) + 1
                     continue
-                ap_name = ap_names.get(client.get('ap_mac'))
-                ap_name = "AP " + ap_name
+                ap_name = "AP " + ap_names.get(client.get('ap_mac'))
                 client_essid = client.get('essid', 'unknow')
                 self._attr[ap_name] = self._attr.get(ap_name, 0) + 1
                 self._attr[client_essid] = self._attr.get(client_essid, 0) + 1
