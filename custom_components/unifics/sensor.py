@@ -194,7 +194,9 @@ class UnifiSensor(Entity):
         except Exception as e:
             _LOGGER.error("Error while trying to update sensor: %s", e)
             _LOGGER.error("ap_name: %s,  client_essid: %s", ap_name, client_essid)
-            _LOGGER.error("dict_ap_names: %s", ap_names)
+            _LOGGER.error("raw data aps: %s", aps)
+            _LOGGER.error("raw data wlans: %s", wlans)
+            _LOGGER.error("raw data clients: %s", clients)
             self._total = 0
 
     def unifi_status(self, state):
