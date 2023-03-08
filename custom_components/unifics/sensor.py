@@ -184,7 +184,7 @@ class UnifiSensor(Entity):
                 if client.get('is_wired') == True:
                     self._attr['wired'] = self._attr.get('wired', 0) + 1
                     continue
-                ap_name = "AP " + ap_names.get(client.get('ap_mac'))
+                ap_name = "AP " + ap_names.get(client.get('ap_mac', 'noname'))
                 client_essid = client.get('essid', 'unknow')
                 self._attr[ap_name] = self._attr.get(ap_name, 0) + 1
                 self._attr[client_essid] = self._attr.get(client_essid, 0) + 1
@@ -194,6 +194,7 @@ class UnifiSensor(Entity):
         except Exception as e:
             _LOGGER.error("Error while trying to update sensor: %s", e)
             _LOGGER.error("ap_name: %s,  client_essid: %s", ap_name, client_essid)
+            _LOGGER.error("dict_ap_names: %s", ap_names)
             self._total = 0
 
     def unifi_status(self, state):
