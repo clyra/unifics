@@ -177,7 +177,7 @@ class UnifiSensor(Entity):
                     self._attr[name] = 0
 
             for wlan in sorted(wlans, key=lambda x: x.get('name', 'unknow').lower()):
-                self._attr[wlan.get('name')] = 0
+                self._attr[wlan.get('name', 'nolanname')] = 0
 
             for client in clients:
                 total += 1
