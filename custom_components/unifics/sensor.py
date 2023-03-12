@@ -221,8 +221,12 @@ class UnifiSensor(Entity):
 
     async def async_will_remove_from_hass(self):
         """When entity will be removed from hass."""
-        self.coordinator.async_remove_listener(self.async_write_ha_state)
-
+        try:
+           self.coordinator.async_remove_listener(self.async_write_ha_state)
+        except Exception as e:
+            _LOGGER.error("couldnt remove listener, but will continue")
+            pass
+        
     @property
     def name(self):
         """Return the name of the sensor."""
