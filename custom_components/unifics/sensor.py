@@ -175,10 +175,20 @@ class UnifiSensor(Entity):
                 if ap.get('type') in [ 'udm', 'uap']:
                     name = "AP " + ap.get('name', 'unknow')
                     self._attr[name] = 0
+        except Exception as e:
+            print("Error while trying to update aps: %s", e)
+            _LOGGER.error("raw data aps: %s", aps)
+            self._total = 0
 
+        try:    
             for wlan in sorted(wlans, key=lambda x: x.get('name', 'unknow').lower()):
-                self._attr[wlan.get('name', 'nolanname')] = 0
+                self._attr[wlan.get('name', 'wlannoname')] = 0
+        except Exception as e:
+            print("Error while trying to update wlans: %s", e)
+            _LOGGER.error("raw data wlans: %s", wlans)
+            self._total = 0
 
+        try:
             for client in clients:
                 total += 1
                 if client.get('is_wired') == True:
@@ -188,17 +198,15 @@ class UnifiSensor(Entity):
                 client_essid = client.get('essid', 'unknow')
                 self._attr[ap_name] = self._attr.get(ap_name, 0) + 1
                 self._attr[client_essid] = self._attr.get(client_essid, 0) + 1
-
+        
             self._total = total
 
         except Exception as e:
-            _LOGGER.error("Error while trying to update sensor: %s", e)
-            _LOGGER.error("ap_name: %s,  client_essid: %s", ap_name, client_essid)
+            print("Error while trying to update sensor: %s", e)    
             _LOGGER.error("raw data aps: %s", aps)
             _LOGGER.error("raw data wlans: %s", wlans)
             _LOGGER.error("raw data clients: %s", clients)
-            self._total = 0
-
+            
     def unifi_status(self, state):
         """ boiler status conversions """
         _LOGGER.debug(state)
