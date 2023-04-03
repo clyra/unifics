@@ -169,7 +169,7 @@ class UnifiSensor(Entity):
             self._attr = {}
             self.ap_list = {}
 
-            ap_names = dict([(ap['mac'], ap.get('name', 'unknow')) for ap in aps])
+            ap_names = dict([(ap['mac'], ap.get('name', ap['mac'])) for ap in aps])
 
             for ap in sorted(aps, key=lambda x: x.get('name', 'unknow').lower()):
                 if ap.get('type') in [ 'udm', 'uap']:
@@ -182,7 +182,7 @@ class UnifiSensor(Entity):
 
         try:    
             for wlan in sorted(wlans, key=lambda x: x.get('name', 'unknow').lower()):
-                self._attr[wlan.get('name', 'wlannoname')] = 0
+                self._attr[wlan.get('name', 'wlan noname')] = 0
         except Exception as e:
             print("Error while trying to update wlans: %s", e)
             _LOGGER.error("raw data wlans: %s", wlans)
