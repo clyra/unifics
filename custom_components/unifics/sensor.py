@@ -173,10 +173,11 @@ class UnifiSensor(Entity):
 
             for ap in sorted(aps, key=lambda x: x.get('name', 'unknow').lower()):
                 if ap.get('type') in [ 'udm', 'uap']:
-                    name = "AP " + ap.get('name', 'unknow')
+                    name = "AP " + ap.get('name', ap.get('mac'))
                     self._attr[name] = 0
         except Exception as e:
-            print("Error while trying to update aps: %s", e)
+            _LOGGER("Error while trying to update aps: %s", e)
+            _LOGGER("AP: %s", ap)
             _LOGGER.error("raw data aps: %s", aps)
             self._total = 0
 
@@ -184,25 +185,27 @@ class UnifiSensor(Entity):
             for wlan in sorted(wlans, key=lambda x: x.get('name', 'unknow').lower()):
                 self._attr[wlan.get('name', 'wlan noname')] = 0
         except Exception as e:
-            print("Error while trying to update wlans: %s", e)
+            _LOGGER("Error while trying to update wlans: %s", e)
+            _LOGGER("WLAN: %s", wlan)
             _LOGGER.error("raw data wlans: %s", wlans)
             self._total = 0
 
         try:
             for client in clients:
                 total += 1
-                if client.get('is_wired') == True:
+                if client.get('is_wired') == True or client.get('ap_mac') == None:
                     self._attr['wired'] = self._attr.get('wired', 0) + 1
                     continue
                 ap_name = "AP " + ap_names.get(client.get('ap_mac', 'noname'))
-                client_essid = client.get('essid', 'unknow')
+                client_essid = client.get('essid', 'wlan noname')
                 self._attr[ap_name] = self._attr.get(ap_name, 0) + 1
                 self._attr[client_essid] = self._attr.get(client_essid, 0) + 1
         
             self._total = total
 
         except Exception as e:
-            print("Error while trying to update sensor: %s", e)    
+            _LOGGER("Error while trying to update clients: %s", e)
+            _LOGGER("client: %s", client)    
             _LOGGER.error("raw data aps: %s", aps)
             _LOGGER.error("raw data wlans: %s", wlans)
             _LOGGER.error("raw data clients: %s", clients)
