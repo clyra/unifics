@@ -193,13 +193,15 @@ class UnifiSensor(Entity):
         try:
             for client in clients:
                 total += 1
-                if client.get('is_wired') == True or client.get('ap_mac') == None:
+                if client.get('is_wired') == True:
                     self._attr['wired'] = self._attr.get('wired', 0) + 1
                     continue
-                ap_name = "AP " + ap_names.get(client.get('ap_mac', 'noname'))
-                client_essid = client.get('essid', 'wlan noname')
-                self._attr[ap_name] = self._attr.get(ap_name, 0) + 1
-                self._attr[client_essid] = self._attr.get(client_essid, 0) + 1
+                if client.get('ap_mac') is not None:
+                    ap_name = "AP " + ap_names.get(client.get('ap_mac', 'noname'))
+                    self._attr[ap_name] = self._attr.get(ap_name, 0) + 1
+                if client.get('essid') is not None:    
+                    client_essid = client.get('essid', 'wlan noname')
+                    self._attr[client_essid] = self._attr.get(client_essid, 0) + 1
         
             self._total = total
 
