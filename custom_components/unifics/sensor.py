@@ -84,7 +84,7 @@ async def async_setup_entry(
             name="sensor",
             update_method=async_update_data,
             # Polling interval. Will only be polled if there are subscribers.
-            update_interval=timedelta(seconds=30),
+            update_interval=timedelta(seconds=45),
            )
 
         # Fetch initial data so we have data when entities subscribe
@@ -132,7 +132,7 @@ async def async_setup_platform(
             name="sensor",
             update_method=async_update_data,
             # Polling interval. Will only be polled if there are subscribers.
-            update_interval=timedelta(seconds=30),
+            update_interval=timedelta(seconds=45),
            )
 
         # Fetch initial data so we have data when entities subscribe
@@ -157,18 +157,16 @@ class UnifiSensor(Entity):
         self.ap_list = {}
         self._total = 0
         self._attr = {}
+        self.error_count = 0
 
 
     def update_all(self):
+        total = 0
+        self._attr = {}
+        self.ap_list = {}
+
         try:
             aps = self.coordinator.data['aps']
-            wlans = self.coordinator.data['wlans']
-            clients = self.coordinator.data['clients']
-
-            total = 0
-            self._attr = {}
-            self.ap_list = {}
-
             ap_names = dict([(ap['mac'], ap.get('name', ap['mac'])) for ap in aps])
 
             for ap in sorted(aps, key=lambda x: x.get('name', 'unknow').lower()):
@@ -177,20 +175,26 @@ class UnifiSensor(Entity):
                     self._attr[name] = 0
         except Exception as e:
             _LOGGER.error("Error while trying to update aps: %s", e)
-            _LOGGER.error("AP: %s", ap)
-            _LOGGER.error("raw data aps: %s", aps)
+            if 'ap' in locals():
+               _LOGGER.error("AP: %s", ap)
+            if 'aps' in locals():
+               _LOGGER.error("raw data aps: %s", aps)
             self._total = 0
 
-        try:    
+        try:
+            wlans = self.coordinator.data['wlans']    
             for wlan in sorted(wlans, key=lambda x: x.get('name', 'unknow').lower()):
                 self._attr[wlan.get('name', 'wlan noname')] = 0
         except Exception as e:
             _LOGGER.error("Error while trying to update wlans: %s", e)
-            _LOGGER.error("WLAN: %s", wlan)
-            _LOGGER.error("raw data wlans: %s", wlans)
+            if 'wlan' in locals():
+                _LOGGER.error("WLAN: %s", wlan)
+            if 'wlans' in locals():
+                _LOGGER.error("raw data wlans: %s", wlans)
             self._total = 0
 
         try:
+            clients = self.coordinator.data['clients']
             for client in clients:
                 total += 1
                 if client.get('is_wired') == True:
@@ -207,13 +211,17 @@ class UnifiSensor(Entity):
 
         except Exception as e:
             _LOGGER.error("Error while trying to update clients: %s", e)
-            _LOGGER.error("client: %s", client)    
-            _LOGGER.error("raw data aps: %s", aps)
-            _LOGGER.error("raw data wlans: %s", wlans)
-            _LOGGER.error("raw data clients: %s", clients)
+            if 'client' in locals():
+                _LOGGER.error("client: %s", client)    
+            if 'aps' in locals():
+                _LOGGER.error("raw data aps: %s", aps)
+            if 'wlans' in locals():
+                _LOGGER.error("raw data wlans: %s", wlans)
+            if 'clients' in locals():
+                _LOGGER.error("raw data clients: %s", clients)
             
     def unifi_status(self, state):
-        """ boiler status conversions """
+        """ Unifi status """
         _LOGGER.debug(state)
 
         return self._total
