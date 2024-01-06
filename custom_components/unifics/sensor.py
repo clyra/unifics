@@ -9,7 +9,7 @@ import logging
 from homeassistant import config_entries, core
 from homeassistant.core import callback
 from typing import Any, Callable, Dict, Optional
-from .api_wrapper import create_client
+from .api_wrapper import create_client, client_get_data
 
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
@@ -73,9 +73,7 @@ async def async_setup_entry(
             """ fetch data from the unifi wrapper"""
             async with async_timeout.timeout(10):
                 data = {}
-                data["aps"] = await hass.async_add_executor_job(control.get_aps)
-                data["wlans"] = await hass.async_add_executor_job(control.get_wlan_conf)
-                data["clients"] = await hass.async_add_executor_job(control.get_clients)
+                data= await hass.async_add_executor_job(client_get_data, control)
                 return data
 
         coordinator = DataUpdateCoordinator(
@@ -121,9 +119,7 @@ async def async_setup_platform(
             """ fetch data from the unifi wrapper"""
             async with async_timeout.timeout(10):
                 data = {}
-                data["aps"] = await hass.async_add_executor_job(control.get_aps)
-                data["wlans"] = await hass.async_add_executor_job(control.get_wlan_conf)
-                data["clients"] = await hass.async_add_executor_job(control.get_clients)
+                data= await hass.async_add_executor_job(client_get_data, control)
                 return data
 
         coordinator = DataUpdateCoordinator(

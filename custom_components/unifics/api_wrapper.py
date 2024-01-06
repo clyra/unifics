@@ -52,3 +52,16 @@ def create_client( host, port, username, password, site, cert, udm):
 
     _LOGGER.debug("unificontrol: OK") 
     return { 'client': client, 'error': 'ok'}
+
+def client_get_data(client):
+    '''receive a unifi client and returns a dictionary with all ap/wlans/clients'''
+
+    data = {}
+    try: 
+      data["aps"] = client.get_aps()
+      data["wlans"] = client.get_wlan_conf()
+      data["clients"] = client.get_clients()
+    except Exception as e:
+        _LOGGER.error("pyunify error: %s", e)
+        
+    return data
