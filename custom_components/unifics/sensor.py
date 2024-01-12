@@ -11,8 +11,11 @@ from homeassistant.core import callback
 from typing import Any, Callable, Dict, Optional
 from .api_wrapper import create_client, client_get_data
 
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 import homeassistant.helpers.config_validation as config_validation
 from homeassistant.const import (
@@ -158,6 +161,7 @@ class UnifiSensor(Entity):
 
     def update_all(self):
         total = 0
+
         self._attr = {}
         self.ap_list = {}
 
@@ -175,7 +179,7 @@ class UnifiSensor(Entity):
                _LOGGER.error("AP: %s", ap)
             if 'aps' in locals():
                _LOGGER.error("raw data aps: %s", aps)
-            self._total = 0
+        #    self._total = 0
 
         try:
             wlans = self.coordinator.data['wlans']    
@@ -187,7 +191,7 @@ class UnifiSensor(Entity):
                 _LOGGER.error("WLAN: %s", wlan)
             if 'wlans' in locals():
                 _LOGGER.error("raw data wlans: %s", wlans)
-            self._total = 0
+        #    self._total = 0
 
         try:
             clients = self.coordinator.data['clients']
