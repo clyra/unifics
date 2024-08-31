@@ -30,7 +30,6 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import (
     ConfigType,
     DiscoveryInfoType,
-    HomeAssistantType,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -99,7 +98,7 @@ async def async_setup_entry(
         _LOGGER.error('Error while setting the sensor: {}'.format(api['error']))
 
 async def async_setup_platform(
-        hass: HomeAssistantType,
+        hass: core.HomeAssistant,
         config: ConfigType,
         async_add_entities: Callable,
         discovery_info: Optional[DiscoveryInfoType] = None):
