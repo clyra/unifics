@@ -1,3 +1,7 @@
+# [NOTICE] This repo is being deprecated
+
+I developed this integration because the official Home Assistant integration did not provide the information I needed, such as the total number of wireless devices per AP or ESSID. However, the [Unifi Network integration](https://www.home-assistant.io/integrations/unifi/) now supports this functionality, so I am deprecating my integration in favor of the official one, which is better supported and more efficiently coded. 
+
 # Unifi Counter Sensor
 
 This sensor shows the number of devices connected to your unifi APs and also
